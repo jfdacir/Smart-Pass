@@ -1,0 +1,2007 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartPass - Complete System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --surface: #0f1430;
+      --panel: #131936;
+      --text: #e9eeff;
+      --muted: #9aa7cc;
+      --border: #243056;
+      --accent: #6aa7ff;
+      --ok: #7ef58c;
+      --warn: #ffd66a;
+      --danger: #ff6a89;
+      --info: #8ef5d4;
+      --card: #151c3a;
+      --shadow: 0 18px 40px rgba(0, 0, 0, .38);
+      --radius: 16px;
+      --focus: #9cc3ff;
+      --hero-fg: #ffffff;
+      --space-1: 6px;
+      --space-2: 10px;
+      --space-3: 14px;
+      --space-4: 18px;
+      --space-5: 24px;
+      --grid-gap: var(--space-3);
+      --transition: 220ms cubic-bezier(.2, .8, .2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg: #f6f8ff;
+      --surface: #ffffff;
+      --panel: #f5f7ff;
+      --text: #0e1633;
+      --muted: #5d6a90;
+      --border: #e1e7ff;
+      --accent: #2f6fff;
+      --card: #ffffff;
+      --shadow: 0 18px 38px rgba(25, 35, 75, .14);
+      --focus: #2f6fff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-weight: 400;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.with-sidebar { padding-left: 280px; transition: padding var(--transition); }
+    h1, h2, h3, .brand { font-family: "Outfit", system-ui; font-weight: 700; letter-spacing: .2px; }
+    .app { min-height: 100dvh; display: flex; flex-direction: column; }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      bottom: 20px;
+      width: 240px;
+      background: var(--role-gradient, linear-gradient(160deg, rgba(108, 147, 255, .85), rgba(160, 112, 255, .85)));
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      box-shadow: 0 20px 45px rgba(21, 38, 86, .28);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 22px;
+      color: var(--hero-fg);
+      z-index: 20;
+      overflow-y: auto;
+    }
+
+    .sidebar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid rgba(255, 255, 255, .28);
+      pointer-events: none;
+    }
+
+    .sidebar .brand {
+      font-size: 26px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--hero-fg);
+    }
+
+    .sidebar .brand span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .18);
+      font-size: 20px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2);
+    }
+
+    .sidebar .profile {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: rgba(255, 255, 255, .16);
+      border-radius: 16px;
+      padding: 14px;
+      color: var(--hero-fg);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22);
+    }
+
+    .sidebar .profile strong { font-size: 1rem; }
+    .sidebar .profile span { opacity: .85; font-size: 14px; }
+
+    .sidebar .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar .nav button {
+      width: 100%;
+      justify-content: flex-start;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 15px;
+      background: rgba(255, 255, 255, .12);
+      color: var(--hero-fg);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar .nav button:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, .22);
+    }
+
+    .sidebar .nav button.active {
+      background: rgba(255, 255, 255, .28);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3);
+    }
+
+    .sidebar .nav button.btn-danger {
+      background: rgba(255, 106, 137, .28);
+      margin-top: 8px;
+    }
+
+    .sidebar .nav button.btn-danger:hover {
+      background: rgba(255, 106, 137, .38);
+    }
+
+    .sidebar .footer {
+      margin-top: auto;
+      font-size: 12px;
+      opacity: .65;
+      text-align: left;
+    }
+
+    .badge-notif {
+      margin-left: auto;
+      background: rgba(255, 106, 137, .9);
+      color: white;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* INPUTS */
+    .select, .input, .textarea {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      outline: none;
+      min-height: 40px;
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+      transition: box-shadow var(--transition);
+    }
+
+    .textarea { resize: vertical; min-height: 80px; }
+
+    .select:focus, .input:focus, .textarea:focus {
+      box-shadow: 0 0 0 3px var(--focus);
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 40px;
+      font-weight: 500;
+      font-size: 14px;
+      transition: transform var(--transition);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* LAYOUT */
+    .wrap {
+      max-width: 1400px;
+      margin: var(--space-5) auto;
+      padding: 0 var(--space-4);
+      flex: 1;
+      width: 100%;
+    }
+
+    .grid { display: grid; gap: var(--grid-gap); }
+    .cards { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .two-col { grid-template-columns: 1fr 1fr; }
+    .three-col { grid-template-columns: 1fr 1fr 1fr; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .welcome-card {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      border-radius: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: linear-gradient(145deg, rgba(106, 167, 255, .22), rgba(160, 128, 255, .18)), var(--card);
+    }
+
+    .welcome-card::after {
+      content: '';
+      position: absolute;
+      inset: auto -40% -80% auto;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, .22), transparent 68%);
+      opacity: .7;
+      pointer-events: none;
+    }
+
+    .welcome-card h2 { font-size: 1.8rem; margin: 0; }
+    .welcome-card p { margin: 0; font-size: 1rem; }
+
+    .kpi {
+      font-size: 32px;
+      font-weight: 800;
+      margin: 8px 0;
+      color: var(--accent);
+    }
+
+    .muted { color: var(--muted); }
+
+    .pill {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--panel);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    /* TABLE */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th { font-weight: 600; color: var(--muted); font-size: 13px; }
+
+    tr:hover { background: rgba(106, 167, 255, .05); }
+
+    .status { font-weight: 700; }
+    .Present { color: var(--ok); }
+    .Late { color: var(--warn); }
+    .Absent { color: var(--danger); }
+    .Excused { color: var(--info); }
+
+    /* LOGIN */
+    .center {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(106, 167, 255, .2), transparent),
+                  radial-gradient(1200px 600px at 100% 10%, rgba(142, 245, 212, .12), transparent),
+                  var(--bg);
+    }
+
+    .login {
+      width: min(460px, 92vw);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .login h1 { margin: 6px 0; font-size: 1.6rem; }
+
+    .creds {
+      margin-top: 12px;
+      background: var(--panel);
+      border: 1px dashed var(--border);
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row > div { display: flex; flex-direction: column; gap: 6px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .form-group label { font-size: 13px; font-weight: 500; color: var(--muted); }
+
+    .loading {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 16, 32, .9);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .spinner {
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-banner, .success-banner, .info-banner {
+      padding: 14px;
+      border-radius: 12px;
+      margin: 12px 0;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .error-banner {
+      background: rgba(255, 106, 137, 0.15);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .success-banner {
+      background: rgba(126, 245, 140, 0.15);
+      border: 1px solid var(--ok);
+      color: var(--ok);
+    }
+
+    .info-banner {
+      background: rgba(106, 167, 255, 0.15);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 16, 32, .85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 { font-size: 1.4rem; }
+
+    .mood-selector {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mood-btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+      cursor: pointer;
+      transition: all var(--transition);
+      text-align: center;
+    }
+
+    .mood-btn:hover { transform: translateY(-2px); }
+    .mood-btn.selected { border-color: var(--accent); background: rgba(106, 167, 255, .15); }
+    .mood-btn .emoji { font-size: 32px; display: block; margin-bottom: 4px; }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 20px;
+    }
+
+    .message-item {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .message-item:hover { background: rgba(106, 167, 255, .08); }
+    .message-item.unread { border-color: var(--accent); background: rgba(106, 167, 255, .05); }
+    .message-item strong { display: block; margin-bottom: 4px; }
+    .message-item .meta { font-size: 12px; color: var(--muted); }
+
+    .ticket-item, .log-item {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .rfid-scanner {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .rfid-scanner .scan-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @media (max-width: 1000px) {
+      body.with-sidebar { padding-left: 0; padding-top: 70px; }
+      .sidebar {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        bottom: auto;
+        width: auto;
+        flex-direction: row;
+        padding: 12px;
+        height: auto;
+        overflow-x: auto;
+      }
+      .sidebar .brand { font-size: 20px; }
+      .sidebar .profile { display: none; }
+      .sidebar .nav { flex-direction: row; }
+      .sidebar .footer { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- LOADING -->
+    <div id="loadingScreen" class="loading" style="display:none">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- LOGIN -->
+    <section id="view-login" class="center">
+      <div class="login">
+        <div class="brand" style="margin-bottom:12px">🎓 SmartPass</div>
+        <h1>Sign in</h1>
+        <p class="muted">Use your SmartPass account.</p>
+        
+        <div id="loginError" class="error-banner" style="display:none"></div>
+        
+        <div class="row" style="margin-top:14px">
+          <div>
+            <label class="muted" for="loginUser">Email</label>
+            <input id="loginUser" class="input" placeholder="e.g., ava.smith@smartpass.edu" />
+          </div>
+          <div>
+            <label class="muted" for="loginPass">Password</label>
+            <input id="loginPass" type="password" class="input" placeholder="your role" />
+          </div>
+        </div>
+        <div class="toolbar" style="justify-content:flex-end;margin-top:14px">
+          <button class="btn btn-primary" onclick="attemptLogin()">Sign in</button>
+        </div>
+        <div class="creds">
+          <div style="font-weight:600;margin-bottom:6px">Sample Test Accounts</div>
+          <div class="muted" style="font-size:12px">All test accounts use password: <strong>123</strong></div>
+          <ul style="margin:8px 0 0 20px;font-size:13px">
+            <li><strong>ava.smith@smartpass.edu</strong> - Student</li>
+            <li><strong>anna.wilson@smartpass.edu</strong> - Professor</li>
+            <li><strong>maria.santos@smartpass.edu</strong> - Department Head</li>
+            <li><strong>sarah.thompson@smartpass.edu</strong> - Counselor</li>
+            <li><strong>sysadmin@smartpass.edu</strong> - System Admin</li>
+            <li><strong>superadmin@smartpass.edu</strong> - Super Admin</li>
+          </ul>
+        </div>
+        <div style="text-align:center;margin-top:16px">
+          <button class="btn btn-ghost" onclick="showSignup()">Don't have an account? Sign Up</button>
+        </div>
+      </div>
+    </section>
+    <!-- SIGNUP VIEW -->
+    <section id="view-signup" class="center" style="display:none">
+      <div class="login">
+        <div class="brand" style="margin-bottom:12px">🎓 SmartPass</div>
+        <h1>Sign Up</h1>
+        <p class="muted">Register for a new account.</p>
+        
+        <div id="signupError" class="error-banner" style="display:none"></div>
+        <div id="signupSuccess" class="success-banner" style="display:none"></div>
+        
+        <div class="form-group" style="margin-top:14px">
+          <label class="muted">First Name</label>
+          <input id="signupFirstName" class="input" placeholder="John" />
+        </div>
+        <div class="form-group">
+          <label class="muted">Last Name</label>
+          <input id="signupLastName" class="input" placeholder="Doe" />
+        </div>
+        <div class="form-group">
+          <label class="muted">Email</label>
+          <input id="signupEmail" class="input" type="email" placeholder="your.email@smartpass.edu" />
+        </div>
+        <div class="form-group">
+          <label class="muted">Department</label>
+          <select id="signupDept" class="select">
+            <option value="">Select Department</option>
+            <option>Computer Science</option>
+            <option>Engineering</option>
+            <option>Business</option>
+            <option>Arts</option>
+            <option>Science</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="muted">Role</label>
+          <select id="signupRole" class="select">
+            <option value="">Select Role</option>
+            <option>Student</option>
+            <option>Professor</option>
+            <option>Department Head</option>
+            <option>Counselor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="muted">Password</label>
+          <input id="signupPassword" type="password" class="input" placeholder="Create a password" />
+        </div>
+        <div class="form-group">
+          <label class="muted">Confirm Password</label>
+          <input id="signupConfirmPassword" type="password" class="input" placeholder="Confirm password" />
+        </div>
+        <div class="toolbar" style="justify-content:space-between;margin-top:14px">
+          <button class="btn btn-ghost" onclick="showLogin()">← Back to Login</button>
+          <button class="btn btn-primary" onclick="submitSignup()">Sign Up</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIDEBAR -->
+    <aside id="app-sidebar" class="sidebar" style="display:none">
+      <div class="brand"><span>🎓</span> SmartPass</div>
+      <div class="profile">
+        <strong id="whoamiName">—</strong>
+        <span id="whoamiRole">—</span>
+      </div>
+      <div class="nav" id="mainNav"></div>
+      <div class="footer">API Connected · MySQL</div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main id="app-main" class="wrap" style="display:none">
+      <!-- Dashboard -->
+      <section id="section-dashboard" class="section active">
+        <div class="grid" style="gap:var(--space-4)">
+          <div class="card welcome-card" id="welcomeCard"></div>
+          <div id="dashboardStats" class="grid cards"></div>
+          <div id="dashboardCharts" class="grid" style="grid-template-columns: 1fr 1fr;"></div>
+        </div>
+      </section>
+
+      <!-- RFID Attendance -->
+      <section id="section-rfid" class="section">
+        <div class="card">
+          <h2 style="margin-bottom:20px">📡 RFID Attendance Scanner</h2>
+          <div class="rfid-scanner">
+            <div class="scan-icon">📱</div>
+            <h3>Tap Your Card to Scan</h3>
+            <p class="muted" style="margin:12px 0">Enter card number or scan RFID</p>
+            <div style="max-width:400px;margin:20px auto">
+              <input id="rfidInput" class="input" placeholder="Card Number (e.g., RFID001)" style="text-align:center;font-size:18px" />
+              <div class="form-group" style="margin-top:12px">
+                <select id="rfidCourse" class="select"></select>
+              </div>
+              <button class="btn btn-primary" onclick="scanRFID()" style="width:100%;margin-top:12px">Log Attendance</button>
+            </div>
+            <div id="scanResult" style="margin-top:20px"></div>
+          </div>
+        </div>
+        
+        <div class="card" style="margin-top:20px">
+          <div class="toolbar">
+            <h3>Recent Scans</h3>
+            <span style="flex:1"></span>
+            <button class="btn btn-ghost" onclick="loadAttendance()">Refresh</button>
+          </div>
+          <table id="attendanceTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>Course</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Messages -->
+      <section id="section-messages" class="section">
+        <div class="grid" style="grid-template-columns: 2fr 1fr">
+          <div class="card">
+            <div class="toolbar">
+              <h2>💬 Messages</h2>
+              <span style="flex:1"></span>
+              <button class="btn btn-primary" onclick="showComposeMessage()">+ New Message</button>
+            </div>
+            <div id="messageList" style="margin-top:20px"></div>
+          </div>
+          <div class="card" id="messageDetail" style="display:none">
+            <h3 id="msgSubject"></h3>
+            <div class="muted" id="msgMeta" style="margin:8px 0"></div>
+            <div id="msgBody" style="margin-top:16px"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Wellness -->
+      <section id="section-wellness" class="section">
+        <div class="grid two-col">
+          <div class="card">
+            <h2 style="margin-bottom:20px">😊 Daily Wellness Check-in</h2>
+            <div id="wellnessForm"></div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:16px">📊 Wellness Summary</h3>
+            <div id="wellnessSummary"></div>
+            <div class="chart-container">
+              <canvas id="wellnessChart"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card" style="margin-top:20px">
+          <h3 style="margin-bottom:16px">📋 Recent Check-ins</h3>
+          <table id="wellnessTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>Mood</th>
+                <th>Wants Meeting</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Appointments -->
+      <section id="section-appointments" class="section">
+        <div class="card">
+          <div class="toolbar">
+            <h2>📅 Counseling Appointments</h2>
+            <span style="flex:1"></span>
+            <button class="btn btn-primary" onclick="showRequestAppointment()">+ Request Appointment</button>
+          </div>
+          <div id="appointmentsList" style="margin-top:20px"></div>
+        </div>
+      </section>
+
+      <!-- Tickets -->
+      <section id="section-tickets" class="section">
+        <div class="card">
+          <div class="toolbar">
+            <h2>🎫 Support Tickets</h2>
+            <span style="flex:1"></span>
+            <button class="btn btn-primary" onclick="showCreateTicket()">+ Create Ticket</button>
+          </div>
+          <div id="ticketsList" style="margin-top:20px"></div>
+        </div>
+      </section>
+
+      <!-- Analytics -->
+      <section id="section-analytics" class="section">
+        <div class="grid two-col">
+          <div class="card">
+            <h3>📊 Attendance Analytics</h3>
+            <div class="chart-container">
+              <canvas id="attendanceChart"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <h3>📈 Monthly Trends</h3>
+            <div class="chart-container">
+              <canvas id="trendsChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Admin -->
+      <section id="section-admin" class="section">
+        <div class="grid two-col">
+          <div class="card">
+            <h3 style="margin-bottom:16px">👥 User Management</h3>
+            <button class="btn btn-primary" onclick="showAddUser()">+ Add User</button>
+            <div id="usersList" style="margin-top:20px"></div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:16px">⚙️ System Logs</h3>
+            <div id="systemLogs" style="max-height:400px;overflow-y:auto"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+    let currentUser = null;
+    let users = [];
+    let courses = [];
+    let attendance = [];
+    let messages = [];
+    let wellness = [];
+    let appointments = [];
+    let tickets = [];
+    let systemLogs = [];
+
+    const $ = id => document.getElementById(id);
+    const showLoading = (show = true) => $('loadingScreen').style.display = show ? 'flex' : 'none';
+
+    function roleGradient(role) {
+      const gradients = {
+        'Student': 'linear-gradient(135deg, rgba(100,150,255,.85), rgba(160,120,255,.85))',
+        'Professor': 'linear-gradient(135deg, rgba(60,200,150,.85), rgba(80,140,255,.85))',
+        'Guidance Counselor': 'linear-gradient(135deg, rgba(255,220,90,.9), rgba(90,140,255,.85))',
+        'Admin/Exec': 'linear-gradient(135deg, #ffffff, #ffffff)',
+        'System Admin': 'linear-gradient(135deg, rgba(10,14,28,.95), rgba(20,26,54,.95))',
+        'Super Admin': 'linear-gradient(135deg, rgba(10,14,28,.95), rgba(20,26,54,.95))'
+      };
+      return gradients[role] || gradients['Student'];
+    }
+
+    function heroForegroundFor(role) {
+      return role === 'Admin/Exec' ? '#0e1633' : '#ffffff';
+    }
+
+    function applyRoleSkin() {
+      const sidebar = $('app-sidebar');
+      sidebar.style.setProperty('--role-gradient', roleGradient(currentUser.role));
+      sidebar.style.setProperty('--hero-fg', heroForegroundFor(currentUser.role));
+    }
+
+    async function attemptLogin() {
+      const username = $('loginUser').value.trim();
+      const password = $('loginPass').value.trim();
+      const errorDiv = $('loginError');
+
+      if (!username || !password) {
+        errorDiv.textContent = 'Please enter both username and password';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      errorDiv.style.display = 'none';
+      showLoading(true);
+
+      try {
+        const response = await fetch(`${API_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          currentUser = data.user;
+          await initApp();
+        } else {
+          errorDiv.textContent = data.error || 'Login failed';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        errorDiv.textContent = 'Failed to connect. Ensure backend is running.';
+        errorDiv.style.display = 'block';
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function initApp() {
+      $('view-login').style.display = 'none';
+      $('app-sidebar').style.display = 'flex';
+      $('app-main').style.display = 'block';
+      document.body.classList.add('with-sidebar');
+
+      $('whoamiName').textContent = currentUser.name;
+      $('whoamiRole').textContent = currentUser.role;
+      
+      applyRoleSkin();
+      renderNavigation();
+      renderWelcome();
+
+      showLoading(true);
+      try {
+        await Promise.all([
+          loadUsers(),
+          loadCourses(),
+          loadAttendance(),
+          loadMessages(),
+          loadWellness(),
+          loadAppointments(),
+          loadTickets(),
+          loadSystemLogs()
+        ]);
+        renderDashboard();
+      } catch (error) {
+        console.error('Failed to load data:', error);
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    function renderNavigation() {
+      const nav = $('mainNav');
+      const role = currentUser.role;
+      
+      let navItems = [
+        { id: 'dashboard', icon: '🏠', label: 'Dashboard', roles: ['all'] },
+        { id: 'rfid', icon: '📡', label: 'RFID Scanner', roles: ['Professor', 'Admin/Exec', 'System Admin', 'Super Admin'] },
+        { id: 'messages', icon: '💬', label: 'Messages', roles: ['all'] },
+        { id: 'wellness', icon: '😊', label: 'Wellness', roles: ['Student', 'Guidance Counselor', 'Admin/Exec', 'System Admin', 'Super Admin'] },
+        { id: 'appointments', icon: '📅', label: 'Appointments', roles: ['Student', 'Guidance Counselor', 'Admin/Exec', 'System Admin', 'Super Admin'] },
+        { id: 'tickets', icon: '🎫', label: 'Tickets', roles: ['all'] },
+        { id: 'analytics', icon: '📊', label: 'Analytics', roles: ['Professor', 'Admin/Exec', 'System Admin', 'Super Admin'] },
+        { id: 'admin', icon: '⚙️', label: 'Admin', roles: ['System Admin', 'Super Admin'] }
+      ];
+
+      nav.innerHTML = navItems
+        .filter(item => item.roles.includes('all') || item.roles.includes(role))
+        .map(item => `<button onclick="showSection('${item.id}')" data-section="${item.id}">${item.icon} ${item.label}${item.id === 'messages' ? '<span class="badge-notif" id="msgBadge" style="display:none">0</span>' : ''}</button>`)
+        .join('');
+      
+      nav.innerHTML += '<button class="btn-danger" onclick="logout()">🚪 Log out</button>';
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      $(`section-${sectionId}`).classList.add('active');
+      
+      document.querySelectorAll('.sidebar .nav button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.section === sectionId) btn.classList.add('active');
+      });
+
+      if (sectionId === 'wellness') renderWellnessForm();
+      if (sectionId === 'messages') renderMessages();
+      if (sectionId === 'appointments') renderAppointments();
+      if (sectionId === 'tickets') renderTickets();
+      if (sectionId === 'analytics') renderAnalytics();
+      if (sectionId === 'admin') renderAdmin();
+      if (sectionId === 'rfid') renderRFIDSection();
+    }
+
+    async function loadUsers() {
+      const response = await fetch(`${API_URL}/users`);
+      users = await response.json();
+    }
+
+    async function loadCourses() {
+      const response = await fetch(`${API_URL}/courses`);
+      courses = await response.json();
+    }
+
+    async function loadAttendance() {
+      let url = `${API_URL}/attendance`;
+      if (currentUser.role === 'Student') url += `?studentId=${currentUser.id}`;
+      const response = await fetch(url);
+      attendance = await response.json();
+      renderAttendanceTable();
+    }
+
+    async function loadMessages() {
+      const response = await fetch(`${API_URL}/messages/${currentUser.id}`);
+      messages = await response.json();
+      updateMessageBadge();
+    }
+
+    async function loadWellness() {
+      let url = `${API_URL}/wellness`;
+      if (currentUser.role === 'Student') url += `?studentId=${currentUser.id}`;
+      const response = await fetch(url);
+      wellness = await response.json();
+      renderWellnessTable();
+    }
+
+    async function loadAppointments() {
+      let url = `${API_URL}/events`;
+      if (currentUser.role === 'Student') url += `?studentId=${currentUser.id}`;
+      if (currentUser.role === 'Guidance Counselor') url += `?counselorId=${currentUser.id}`;
+      const response = await fetch(url);
+      appointments = await response.json();
+    }
+
+    async function loadTickets() {
+      let url = `${API_URL}/tickets`;
+      if (currentUser.role === 'Student') url += `?requestorId=${currentUser.id}`;
+      const response = await fetch(url);
+      tickets = await response.json();
+    }
+
+    async function loadSystemLogs() {
+      const response = await fetch(`${API_URL}/system/logs?limit=100`);
+      systemLogs = await response.json();
+    }
+
+    function updateMessageBadge() {
+      const unread = messages.filter(m => !m.is_read).length;
+      const badge = $('msgBadge');
+      if (badge) {
+        if (unread > 0) {
+          badge.textContent = unread;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    }
+
+    function renderWelcome() {
+      const card = $('welcomeCard');
+      const firstName = currentUser.name.split(' ')[0];
+      const role = currentUser.role;
+      
+      const copy = {
+        'Student': { badge: 'Student Portal', greeting: `Hello, ${firstName}`, caption: 'Track attendance, wellness, and connect with support.' },
+        'Professor': { badge: 'Faculty Workspace', greeting: `Hello, ${firstName}`, caption: 'Manage attendance and view class analytics.' },
+        'Guidance Counselor': { badge: 'Guidance Desk', greeting: `Hello, ${firstName}`, caption: 'Support student wellness and schedule meetings.' },
+        'Admin/Exec': { badge: 'Admin Control', greeting: 'Hello, Admin', caption: 'Institution-wide insights and management.' },
+        'System Admin': { badge: 'SysOps', greeting: 'Hello, System Admin', caption: 'System oversight and technical support.' },
+        'Super Admin': { badge: 'God Mode', greeting: 'Hello, SuperAdmin', caption: 'Complete system control and administration.' }
+      };
+
+      const { badge, greeting, caption } = copy[role] || copy['Student'];
+      
+      card.innerHTML = `
+        <span style="background:rgba(255,255,255,.12);padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;display:inline-block;margin-bottom:8px">${badge}</span>
+        <h2>${greeting}</h2>
+        <p class="muted">${caption}</p>
+      `;
+
+      card.style.background = roleGradient(role);
+      card.style.color = heroForegroundFor(role);
+    }
+
+    function renderDashboard() {
+      const stats = $('dashboardStats');
+      const role = currentUser.role;
+      let cards = [];
+
+      if (role === 'Student') {
+        const myAtt = attendance.filter(a => a.student_id === currentUser.id);
+        cards = [
+          kpi('📚 Total Sessions', myAtt.length),
+          kpi('✅ Present', myAtt.filter(a => a.status === 'Present').length),
+          kpi('⏰ Late', myAtt.filter(a => a.status === 'Late').length),
+          kpi('❌ Absent', myAtt.filter(a => a.status === 'Absent').length)
+        ];
+      } else {
+        cards = [
+          kpi('📊 Total Records', attendance.length),
+          kpi('✅ Present', attendance.filter(a => a.status === 'Present').length),
+          kpi('⏰ Late', attendance.filter(a => a.status === 'Late').length),
+          kpi('❌ Absent', attendance.filter(a => a.status === 'Absent').length)
+        ];
+      }
+
+      stats.innerHTML = cards.join('');
+    }
+
+    function kpi(title, value) {
+      return `<div class="card">
+        <div class="pill">${title}</div>
+        <div class="kpi">${value}</div>
+      </div>`;
+    }
+
+    function renderAttendanceTable() {
+      const tbody = document.querySelector('#attendanceTable tbody');
+      if (!tbody) return;
+
+      if (attendance.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="muted">No attendance records.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = attendance.slice(0, 20).map(record => {
+        const student = users.find(u => u.id === record.student_id);
+        const course = courses.find(c => c.course_id === record.course_id);
+        
+        return `<tr>
+          <td>${record.date}</td>
+          <td>${student ? student.name : record.student_id}</td>
+          <td>${course ? `${course.course_id} - ${course.course_name}` : record.course_id}</td>
+          <td><span class="status ${record.status}">${record.status}</span></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderRFIDSection() {
+      const select = $('rfidCourse');
+      select.innerHTML = '<option value="">Select Course</option>' + 
+        courses.map(c => `<option value="${c.course_id}">${c.course_id} - ${c.course_name}</option>`).join('');
+    }
+
+    async function scanRFID() {
+      const cardNumber = $('rfidInput').value.trim();
+      const courseId = $('rfidCourse').value;
+      const result = $('scanResult');
+
+      if (!cardNumber || !courseId) {
+        result.innerHTML = '<div class="error-banner">Please enter card number and select course</div>';
+        return;
+      }
+
+      showLoading(true);
+      try {
+        // Get student ID from RFID
+        const cardResp = await fetch(`${API_URL}/attendance/rfid/${cardNumber}`);
+        if (!cardResp.ok) {
+          result.innerHTML = '<div class="error-banner">Card not found in system</div>';
+          showLoading(false);
+          return;
+        }
+        
+        const { studentId } = await cardResp.json();
+        const student = users.find(u => u.id === studentId);
+        
+        // Log attendance
+        const today = new Date().toISOString().split('T')[0];
+        await fetch(`${API_URL}/attendance`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            studentId,
+            courseId,
+            date: today,
+            status: 'Present'
+          })
+        });
+
+        result.innerHTML = `<div class="success-banner">✓ ${student?.name || studentId} marked present in ${courseId}</div>`;
+        $('rfidInput').value = '';
+        await loadAttendance();
+      } catch (error) {
+        result.innerHTML = '<div class="error-banner">Scan failed. Try again.</div>';
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    function renderMessages() {
+      const list = $('messageList');
+      if (messages.length === 0) {
+        list.innerHTML = '<p class="muted">No messages yet.</p>';
+        return;
+      }
+
+      list.innerHTML = messages.map(msg => {
+        const sender = users.find(u => u.id === msg.sender_id);
+        return `<div class="message-item ${msg.is_read ? '' : 'unread'}" onclick="viewMessage('${msg.id}')">
+          <strong>${msg.subject}</strong>
+          <div class="meta">From: ${sender?.name || 'System'} • ${new Date(msg.sent_at).toLocaleDateString()}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function viewMessage(msgId) {
+      const msg = messages.find(m => m.id == msgId);
+      if (!msg) return;
+
+      const sender = users.find(u => u.id === msg.sender_id);
+      $('msgSubject').textContent = msg.subject;
+      $('msgMeta').textContent = `From: ${sender?.name || 'System'} • ${new Date(msg.sent_at).toLocaleString()}`;
+      $('msgBody').textContent = msg.message;
+      $('messageDetail').style.display = 'block';
+
+      // Mark as read
+      if (!msg.is_read) {
+        fetch(`${API_URL}/messages/read/${currentUser.id}`, { method: 'PUT' });
+        msg.is_read = true;
+        updateMessageBadge();
+        renderMessages();
+      }
+    }
+
+    function showComposeMessage() {
+      const html = `
+        <div class="modal" onclick="if(event.target===this) this.remove()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>✉️ New Message</h2>
+              <button class="btn btn-ghost" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+              <label>To</label>
+              <select id="msgRecipient" class="select">
+                ${users.filter(u => u.id !== currentUser.id).map(u => `<option value="${u.id}">${u.name} (${u.role})</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Subject</label>
+              <input id="msgSubject" class="input" placeholder="Message subject" />
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea id="msgBody" class="textarea" placeholder="Type your message"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="sendMessage()">Send Message</button>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', html);
+    }
+
+    async function sendMessage() {
+      const recipientId = $('msgRecipient').value;
+      const subject = $('msgSubject').value.trim();
+      const message = $('msgBody').value.trim();
+
+      if (!subject || !message) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      await fetch(`${API_URL}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          senderId: currentUser.id,
+          recipientId,
+          subject,
+          message,
+          date: new Date().toISOString()
+        })
+      });
+
+      document.querySelector('.modal').remove();
+      alert('Message sent!');
+    }
+
+    function renderWellnessForm() {
+      const form = $('wellnessForm');
+      const today = new Date().toISOString().split('T')[0];
+      const todayLog = wellness.find(w => w.student_id === currentUser.id && w.date === today);
+
+      if (todayLog) {
+        form.innerHTML = `<div class="info-banner">✓ You've already logged your wellness today (${todayLog.mood})</div>`;
+        return;
+      }
+
+      if (currentUser.role !== 'Student') {
+        form.innerHTML = `<p class="muted">Wellness check-ins are for students only.</p>`;
+        return;
+      }
+
+      form.innerHTML = `
+        <p class="muted" style="margin-bottom:16px">How are you feeling today?</p>
+        <div class="mood-selector">
+          <div class="mood-btn" onclick="selectMood(this, 'Great')">
+            <span class="emoji">😄</span>
+            <div>Great</div>
+          </div>
+          <div class="mood-btn" onclick="selectMood(this, 'Okay')">
+            <span class="emoji">😊</span>
+            <div>Okay</div>
+          </div>
+          <div class="mood-btn" onclick="selectMood(this, 'Meh')">
+            <span class="emoji">😐</span>
+            <div>Meh</div>
+          </div>
+          <div class="mood-btn" onclick="selectMood(this, 'Not Okay')">
+            <span class="emoji">😔</span>
+            <div>Not Okay</div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:20px">
+          <label><input type="checkbox" id="wantsMeeting" /> I'd like to talk to a counselor</label>
+        </div>
+        <div class="form-group">
+          <label>Notes (optional)</label>
+          <textarea id="wellnessNote" class="textarea" placeholder="Anything you want to share..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="submitWellness()" id="submitWellnessBtn" disabled>Submit Check-in</button>
+      `;
+    }
+
+    let selectedMood = null;
+
+    function selectMood(btn, mood) {
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedMood = mood;
+      $('submitWellnessBtn').disabled = false;
+    }
+
+    async function submitWellness() {
+      if (!selectedMood) return;
+
+      const wantsMeeting = $('wantsMeeting')?.checked || false;
+      const note = $('wellnessNote')?.value.trim() || null;
+      const today = new Date().toISOString().split('T')[0];
+
+      await fetch(`${API_URL}/wellness`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: currentUser.id,
+          date: today,
+          mood: selectedMood,
+          factors: [],
+          wantsMeeting,
+          slot: null,
+          note
+        })
+      });
+
+      await loadWellness();
+      renderWellnessForm();
+      alert('Wellness check-in submitted!');
+    }
+
+    function renderWellnessTable() {
+      const tbody = document.querySelector('#wellnessTable tbody');
+      if (!tbody) return;
+
+      if (wellness.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="muted">No wellness logs.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = wellness.slice(0, 20).map(log => {
+        const student = users.find(u => u.id === log.student_id);
+        return `<tr>
+          <td>${log.date}</td>
+          <td>${student?.name || log.student_id}</td>
+          <td>${log.mood}</td>
+          <td>${log.wants_meeting ? '✓ Yes' : '—'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderAppointments() {
+      const list = $('appointmentsList');
+      if (appointments.length === 0) {
+        list.innerHTML = '<p class="muted">No appointments.</p>';
+        return;
+      }
+
+      list.innerHTML = appointments.map(apt => {
+        const student = users.find(u => u.id === apt.student_id);
+        const counselor = users.find(u => u.id === apt.counselor_id);
+        return `<div class="ticket-item">
+          <strong>${student?.name || apt.student_id}</strong> → ${counselor?.name || 'Counselor'}
+          <div class="muted">Mood: ${apt.mood} • Status: ${apt.status}</div>
+          ${apt.meeting_date ? `<div>📅 ${apt.meeting_date} at ${apt.slot}</div>` : ''}
+        </div>`;
+      }).join('');
+    }
+
+    function showRequestAppointment() {
+      const counselors = users.filter(u => u.role === 'Guidance Counselor');
+      const html = `
+        <div class="modal" onclick="if(event.target===this) this.remove()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>📅 Request Appointment</h2>
+              <button class="btn btn-ghost" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+              <label>Counselor</label>
+              <select id="aptCounselor" class="select">
+                ${counselors.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>How are you feeling?</label>
+              <select id="aptMood" class="select">
+                <option>Great</option>
+                <option>Okay</option>
+                <option>Meh</option>
+                <option>Not Okay</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Note</label>
+              <textarea id="aptNote" class="textarea" placeholder="What would you like to discuss?"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="submitAppointment()">Request Appointment</button>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', html);
+    }
+
+    async function submitAppointment() {
+      const counselorId = $('aptCounselor').value;
+      const mood = $('aptMood').value;
+      const note = $('aptNote').value.trim();
+
+      await fetch(`${API_URL}/events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: `EVT-${Date.now()}`,
+          studentId: currentUser.id,
+          counselorId,
+          mood,
+          meetingDate: null,
+          slot: null,
+          note
+        })
+      });
+
+      document.querySelector('.modal').remove();
+      await loadAppointments();
+      renderAppointments();
+      alert('Appointment requested!');
+    }
+
+    function renderTickets() {
+      const list = $('ticketsList');
+      if (tickets.length === 0) {
+        list.innerHTML = '<p class="muted">No tickets.</p>';
+        return;
+      }
+
+      list.innerHTML = tickets.map(ticket => {
+        const requestor = users.find(u => u.id === ticket.requestor_id);
+        return `<div class="ticket-item">
+          <strong>${ticket.subject}</strong>
+          <div class="muted">${ticket.category} • ${ticket.priority} • ${ticket.status}</div>
+          <div class="muted">By: ${requestor?.name || ticket.requestor_id}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function showCreateTicket() {
+      const html = `
+        <div class="modal" onclick="if(event.target===this) this.remove()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>🎫 Create Ticket</h2>
+              <button class="btn btn-ghost" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+              <label>Subject</label>
+              <input id="ticketSubject" class="input" placeholder="Brief description" />
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="ticketCategory" class="select">
+                <option>Technical</option>
+                <option>Access</option>
+                <option>Attendance</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Priority</label>
+              <select id="ticketPriority" class="select">
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+                <option>Critical</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Details</label>
+              <textarea id="ticketDetails" class="textarea" placeholder="Describe the issue"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="submitTicket()">Create Ticket</button>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', html);
+    }
+
+    async function submitTicket() {
+      const subject = $('ticketSubject').value.trim();
+      const category = $('ticketCategory').value;
+      const priority = $('ticketPriority').value;
+      const details = $('ticketDetails').value.trim();
+
+      if (!subject) {
+        alert('Please enter a subject');
+        return;
+      }
+
+      await fetch(`${API_URL}/tickets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: `TKT-${Date.now()}`,
+          subject,
+          category,
+          priority,
+          details,
+          ownerId: 'SU1',
+          requestorId: currentUser.id
+        })
+      });
+
+      document.querySelector('.modal').remove();
+      await loadTickets();
+      renderTickets();
+      alert('Ticket created!');
+    }
+
+    function renderAnalytics() {
+      // Attendance by status chart
+      const statusCounts = {
+        Present: attendance.filter(a => a.status === 'Present').length,
+        Late: attendance.filter(a => a.status === 'Late').length,
+        Absent: attendance.filter(a => a.status === 'Absent').length,
+        Excused: attendance.filter(a => a.status === 'Excused').length
+      };
+
+      const ctx1 = document.getElementById('attendanceChart');
+      if (ctx1) {
+        new Chart(ctx1, {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(statusCounts),
+            datasets: [{
+              data: Object.values(statusCounts),
+              backgroundColor: ['#7ef58c', '#ffd66a', '#ff6a89', '#8ef5d4']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom' }
+            }
+          }
+        });
+      }
+
+      // Monthly trends
+      const ctx2 = document.getElementById('trendsChart');
+      if (ctx2) {
+        new Chart(ctx2, {
+          type: 'line',
+          data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [{
+              label: 'Present',
+              data: [85, 90, 88, 92],
+              borderColor: '#7ef58c',
+              tension: 0.4
+            }, {
+              label: 'Absent',
+              data: [10, 8, 9, 6],
+              borderColor: '#ff6a89',
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom' }
+            }
+          }
+        });
+      }
+    }
+
+    async function renderAdmin() {
+      // Load pending users
+      let pendingUsers = [];
+      try {
+        const response = await fetch(`${API_URL}/system/pending-users`);
+        pendingUsers = await response.json();
+      } catch (error) {
+        console.error('Failed to load pending users:', error);
+      }
+
+      // Existing Users Management
+      const usersList = $('usersList');
+      usersList.innerHTML = `
+        <div style="max-height:400px;overflow-y:auto">
+          <table style="width:100%">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Dept</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${users.map(u => `
+                <tr>
+                  <td>${u.name}</td>
+                  <td>${u.role}</td>
+                  <td>${u.dept || '—'}</td>
+                  <td>
+                    <button class="btn btn-ghost" style="padding:6px 10px" onclick="editUser('${u.id}')">✏️ Edit</button>
+                    <button class="btn btn-danger" style="padding:6px 10px" onclick="deleteUser('${u.id}', '${u.name}')">🗑️ Delete</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        
+        ${pendingUsers.length > 0 ? `
+          <h3 style="margin-top:24px;margin-bottom:12px">⏳ Pending Approvals</h3>
+          <div style="max-height:300px;overflow-y:auto">
+            ${pendingUsers.map(pu => `
+              <div class="ticket-item" style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <strong>${pu.first_name} ${pu.last_name}</strong>
+                  <div class="muted">${pu.role} • ${pu.department}</div>
+                  <div class="muted" style="font-size:11px">Requested: ${new Date(pu.requested_at).toLocaleDateString()}</div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button class="btn btn-primary" style="padding:8px 12px" onclick="approveUser('${pu.id}')">✓ Approve</button>
+                  <button class="btn btn-danger" style="padding:8px 12px" onclick="rejectUser('${pu.id}')">✕ Reject</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+      `;
+
+      // System Logs
+      const logsList = $('systemLogs');
+      logsList.innerHTML = systemLogs.slice(0, 50).map(log => `
+        <div class="log-item">
+          <strong>${log.action}</strong>
+          <div class="muted">${log.detail} • ${log.actor}</div>
+          <div class="muted" style="font-size:11px">${new Date(log.timestamp).toLocaleString()}</div>
+        </div>
+      `).join('');
+    }
+
+    function editUser(userId) {
+      const user = users.find(u => u.id === userId);
+      if (!user) return;
+
+      const html = `
+        <div class="modal" onclick="if(event.target===this) this.remove()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>✏️ Edit User</h2>
+              <button class="btn btn-ghost" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+              <label>Name</label>
+              <input id="editName" class="input" value="${user.name}" />
+            </div>
+            <div class="form-group">
+              <label>Role</label>
+              <select id="editRole" class="select">
+                <option ${user.role === 'Student' ? 'selected' : ''}>Student</option>
+                <option ${user.role === 'Professor' ? 'selected' : ''}>Professor</option>
+                <option ${user.role === 'Guidance Counselor' ? 'selected' : ''}>Guidance Counselor</option>
+                <option ${user.role === 'Admin/Exec' ? 'selected' : ''}>Admin/Exec</option>
+                <option ${user.role === 'System Admin' ? 'selected' : ''}>System Admin</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Department</label>
+              <input id="editDept" class="input" value="${user.dept || ''}" />
+            </div>
+            <button class="btn btn-primary" onclick="saveUserEdit('${userId}')">Save Changes</button>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', html);
+    }
+
+    async function saveUserEdit(userId) {
+      const name = $('editName').value.trim();
+      const role = $('editRole').value;
+      const dept = $('editDept').value.trim();
+
+      if (!name) {
+        alert('Name is required');
+        return;
+      }
+
+      showLoading(true);
+      try {
+        await fetch(`${API_URL}/users/${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, role, dept })
+        });
+
+        document.querySelector('.modal').remove();
+        await loadUsers();
+        renderAdmin();
+        alert('User updated!');
+      } catch (error) {
+        alert('Failed to update user');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function deleteUser(userId, userName) {
+      if (!confirm(`Delete user "${userName}"? This cannot be undone.`)) return;
+
+      showLoading(true);
+      try {
+        await fetch(`${API_URL}/users/${userId}`, { method: 'DELETE' });
+        await loadUsers();
+        renderAdmin();
+        alert('User deleted');
+      } catch (error) {
+        alert('Failed to delete user');
+      } finally {
+        showLoading(false);
+      }
+    }
+    function showAddUser() {
+      const html = `
+        <div class="modal" onclick="if(event.target===this) this.remove()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>➕ Add New User</h2>
+              <button class="btn btn-ghost" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+              <label>Full Name</label>
+              <input id="addUserName" class="input" placeholder="John Doe" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input id="addUserEmail" class="input" type="email" placeholder="john.doe@smartpass.edu" />
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input id="addUserPassword" class="input" type="password" placeholder="Enter password" />
+            </div>
+            <div class="form-group">
+              <label>Role</label>
+              <select id="addUserRole" class="select">
+                <option value="">Select Role</option>
+                <option>Student</option>
+                <option>Professor</option>
+                <option>Department Head</option>
+                <option>Counselor</option>
+                <option>System Admin</option>
+                <option>Super Admin</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Department</label>
+              <input id="addUserDept" class="input" placeholder="Department name" />
+            </div>
+            <div class="form-group" id="rfidSection" style="display:none">
+              <label>RFID Card Number</label>
+              <div style="display:flex;gap:10px;align-items:center">
+                <input id="addUserRFID" class="input" placeholder="Tap RFID card or enter manually" style="flex:1" />
+                <button class="btn btn-primary" onclick="focusRFIDInput()" style="white-space:nowrap">📱 Scan</button>
+              </div>
+              <div class="muted" style="font-size:12px;margin-top:4px">Tap the RFID card on the scanner</div>
+            </div>
+            <button class="btn btn-primary" onclick="saveNewUser()">Create User</button>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', html);
+      
+      // Show RFID field only for students
+      const roleSelect = document.getElementById('addUserRole');
+      roleSelect.addEventListener('change', (e) => {
+        const rfidSection = document.getElementById('rfidSection');
+        if (e.target.value === 'Student') {
+          rfidSection.style.display = 'block';
+        } else {
+          rfidSection.style.display = 'none';
+          document.getElementById('addUserRFID').value = '';
+        }
+      });
+    }
+
+    function focusRFIDInput() {
+      const input = document.getElementById('addUserRFID');
+      input.focus();
+      input.select();
+    }
+
+    async function saveNewUser() {
+      const name = $('addUserName').value.trim();
+      const email = $('addUserEmail').value.trim();
+      const password = $('addUserPassword').value.trim();
+      const role = $('addUserRole').value;
+      const dept = $('addUserDept').value.trim();
+      const rfidCard = $('addUserRFID').value.trim();
+
+      if (!name || !email || !password || !role) {
+        alert('Please fill in all required fields (Name, Email, Password, Role)');
+        return;
+      }
+
+      if (!email.includes('@') || !email.includes('.')) {
+        alert('Please enter a valid email address');
+        return;
+      }
+
+      if (password.length < 3) {
+        alert('Password must be at least 3 characters');
+        return;
+      }
+
+      if (role === 'Student' && !rfidCard) {
+        alert('RFID card number is required for students');
+        return;
+      }
+
+      showLoading(true);
+      try {
+        const response = await fetch(`${API_URL}/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, role, dept, rfidCard })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.querySelector('.modal').remove();
+          await loadUsers();
+          renderAdmin();
+          alert('User created successfully!');
+        } else {
+          alert(data.error || 'Failed to create user');
+        }
+      } catch (error) {
+        alert('Failed to create user: ' + error.message);
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function approveUser(pendingId) {
+      showLoading(true);
+      try {
+        await fetch(`${API_URL}/system/approve-user/${pendingId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ decidedBy: currentUser.name })
+        });
+        
+        await loadUsers();
+        renderAdmin();
+        alert('User approved and activated!');
+      } catch (error) {
+        alert('Failed to approve user');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function rejectUser(pendingId) {
+      if (!confirm('Reject this registration request?')) return;
+
+      showLoading(true);
+      try {
+        await fetch(`${API_URL}/system/reject-user/${pendingId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ decidedBy: currentUser.name })
+        });
+        
+        renderAdmin();
+        alert('Registration rejected');
+      } catch (error) {
+        alert('Failed to reject user');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      $('app-sidebar').style.display = 'none';
+      $('app-main').style.display = 'none';
+      $('view-login').style.display = 'flex';
+      document.body.classList.remove('with-sidebar');
+      $('loginUser').value = '';
+      $('loginPass').value = '';
+    }
+    function showSignup() {
+      $('view-login').style.display = 'none';
+      $('view-signup').style.display = 'flex';
+    }
+
+    function showLogin() {
+      $('view-signup').style.display = 'none';
+      $('view-login').style.display = 'flex';
+    }
+
+    async function submitSignup() {
+      const firstName = $('signupFirstName').value.trim();
+      const lastName = $('signupLastName').value.trim();
+      const email = $('signupEmail').value.trim();
+      const department = $('signupDept').value;
+      const role = $('signupRole').value;
+      const password = $('signupPassword').value;
+      const confirmPassword = $('signupConfirmPassword').value;
+      const errorDiv = $('signupError');
+      const successDiv = $('signupSuccess');
+
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      if (!firstName || !lastName || !email || !department || !role || !password || !confirmPassword) {
+        errorDiv.textContent = 'Please fill in all fields';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      if (!email.includes('@') || !email.includes('.')) {
+        errorDiv.textContent = 'Please enter a valid email address';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (password.length < 3) {
+        errorDiv.textContent = 'Password must be at least 3 characters';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      showLoading(true);
+      try {
+        const response = await fetch(`${API_URL}/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ firstName, lastName, email, department, role, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          successDiv.textContent = 'Registration submitted! Awaiting approval from department head.';
+          successDiv.style.display = 'block';
+          // Clear form
+          $('signupFirstName').value = '';
+          $('signupLastName').value = '';
+          $('signupDept').value = '';
+          $('signupRole').value = '';
+          $('signupPassword').value = '';
+          $('signupConfirmPassword').value = '';
+          
+          // Redirect to login after 3 seconds
+          setTimeout(() => showLogin(), 3000);
+        } else {
+          errorDiv.textContent = data.error || 'Signup failed';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Failed to connect to server';
+        errorDiv.style.display = 'block';
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      ['loginUser', 'loginPass'].forEach(id => {
+        $(id).addEventListener('keypress', e => {
+          if (e.key === 'Enter') attemptLogin();
+        });
+      });
+
+      // Auto-focus RFID input
+      document.addEventListener('click', e => {
+        if (e.target.closest('#section-rfid')) {
+          setTimeout(() => $('rfidInput')?.focus(), 100);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
