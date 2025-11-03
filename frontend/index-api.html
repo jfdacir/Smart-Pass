@@ -618,11 +618,26 @@
           <label class="muted">Department</label>
           <select id="signupDept" class="select">
             <option value="">Select Department</option>
-            <option>Computer Science</option>
-            <option>Engineering</option>
-            <option>Business</option>
-            <option>Arts</option>
-            <option>Science</option>
+            <option>Department of Liberal Arts (DLA)</option>
+            <option>Department of Mathematics</option>
+            <option>Department of Athletics and Physical Education</option>
+            <option>Department of Physics</option>
+            <option>E.T. YUCHENGCO SCHOOL OF BUSINESS AND MANAGEMENT (ETYSBM)</option>
+            <option>School of Architecture, Industrial Design and Built Environment (ARIDBE)</option>
+            <option>School of Civil, Environmental, and Geological Engineering (CEGE)</option>
+            <option>School of Chemical Biological, and Materials Engineering and Sciences (CBMES)</option>
+            <option>School of Electrical, Electronics, and Computer Engineering (EECE)</option>
+            <option>School of Graduate Studies (GS)</option>
+            <option>School of Industrial Engineering Management (IE-EMG)</option>
+            <option>School of Information Technology (SOIT)</option>
+            <option>School of Mechanical and Manufacturing Engineering (SMME)</option>
+            <option>School of Multimedia and Digital Arts (SoMDA)</option>
+            <option>Senior High School (SHS)</option>
+            <option>School of Health Sciences (SOHS)</option>
+            <option>School of Nursing (SON)</option>
+            <option>School of Medicine (SOM)</option>
+            <option>School of Tourism and Hospitality Management (STHM)</option>
+            <option>School of Foundation Studies and Education (SFSE)</option>
           </select>
         </div>
         <div class="form-group">
@@ -1683,7 +1698,29 @@
             </div>
             <div class="form-group">
               <label>Department</label>
-              <input id="editDept" class="input" value="${user.dept || ''}" />
+              <select id="editDept" class="select">
+                <option value="">None</option>
+                <option ${user.dept === 'Department of Liberal Arts (DLA)' ? 'selected' : ''}>Department of Liberal Arts (DLA)</option>
+                <option ${user.dept === 'Department of Mathematics' ? 'selected' : ''}>Department of Mathematics</option>
+                <option ${user.dept === 'Department of Athletics and Physical Education' ? 'selected' : ''}>Department of Athletics and Physical Education</option>
+                <option ${user.dept === 'Department of Physics' ? 'selected' : ''}>Department of Physics</option>
+                <option ${user.dept === 'E.T. YUCHENGCO SCHOOL OF BUSINESS AND MANAGEMENT (ETYSBM)' ? 'selected' : ''}>E.T. YUCHENGCO SCHOOL OF BUSINESS AND MANAGEMENT (ETYSBM)</option>
+                <option ${user.dept === 'School of Architecture, Industrial Design and Built Environment (ARIDBE)' ? 'selected' : ''}>School of Architecture, Industrial Design and Built Environment (ARIDBE)</option>
+                <option ${user.dept === 'School of Civil, Environmental, and Geological Engineering (CEGE)' ? 'selected' : ''}>School of Civil, Environmental, and Geological Engineering (CEGE)</option>
+                <option ${user.dept === 'School of Chemical Biological, and Materials Engineering and Sciences (CBMES)' ? 'selected' : ''}>School of Chemical Biological, and Materials Engineering and Sciences (CBMES)</option>
+                <option ${user.dept === 'School of Electrical, Electronics, and Computer Engineering (EECE)' ? 'selected' : ''}>School of Electrical, Electronics, and Computer Engineering (EECE)</option>
+                <option ${user.dept === 'School of Graduate Studies (GS)' ? 'selected' : ''}>School of Graduate Studies (GS)</option>
+                <option ${user.dept === 'School of Industrial Engineering Management (IE-EMG)' ? 'selected' : ''}>School of Industrial Engineering Management (IE-EMG)</option>
+                <option ${user.dept === 'School of Information Technology (SOIT)' ? 'selected' : ''}>School of Information Technology (SOIT)</option>
+                <option ${user.dept === 'School of Mechanical and Manufacturing Engineering (SMME)' ? 'selected' : ''}>School of Mechanical and Manufacturing Engineering (SMME)</option>
+                <option ${user.dept === 'School of Multimedia and Digital Arts (SoMDA)' ? 'selected' : ''}>School of Multimedia and Digital Arts (SoMDA)</option>
+                <option ${user.dept === 'Senior High School (SHS)' ? 'selected' : ''}>Senior High School (SHS)</option>
+                <option ${user.dept === 'School of Health Sciences (SOHS)' ? 'selected' : ''}>School of Health Sciences (SOHS)</option>
+                <option ${user.dept === 'School of Nursing (SON)' ? 'selected' : ''}>School of Nursing (SON)</option>
+                <option ${user.dept === 'School of Medicine (SOM)' ? 'selected' : ''}>School of Medicine (SOM)</option>
+                <option ${user.dept === 'School of Tourism and Hospitality Management (STHM)' ? 'selected' : ''}>School of Tourism and Hospitality Management (STHM)</option>
+                <option ${user.dept === 'School of Foundation Studies and Education (SFSE)' ? 'selected' : ''}>School of Foundation Studies and Education (SFSE)</option>
+              </select>
             </div>
             <button class="btn btn-primary" onclick="saveUserEdit('${userId}')">Save Changes</button>
           </div>
@@ -1770,7 +1807,29 @@
             </div>
             <div class="form-group">
               <label>Department</label>
-              <input id="addUserDept" class="input" placeholder="Department name" />
+              <select id="addUserDept" class="select">
+                <option value="">Select Department</option>
+                <option>Department of Liberal Arts (DLA)</option>
+                <option>Department of Mathematics</option>
+                <option>Department of Athletics and Physical Education</option>
+                <option>Department of Physics</option>
+                <option>E.T. YUCHENGCO SCHOOL OF BUSINESS AND MANAGEMENT (ETYSBM)</option>
+                <option>School of Architecture, Industrial Design and Built Environment (ARIDBE)</option>
+                <option>School of Civil, Environmental, and Geological Engineering (CEGE)</option>
+                <option>School of Chemical Biological, and Materials Engineering and Sciences (CBMES)</option>
+                <option>School of Electrical, Electronics, and Computer Engineering (EECE)</option>
+                <option>School of Graduate Studies (GS)</option>
+                <option>School of Industrial Engineering Management (IE-EMG)</option>
+                <option>School of Information Technology (SOIT)</option>
+                <option>School of Mechanical and Manufacturing Engineering (SMME)</option>
+                <option>School of Multimedia and Digital Arts (SoMDA)</option>
+                <option>Senior High School (SHS)</option>
+                <option>School of Health Sciences (SOHS)</option>
+                <option>School of Nursing (SON)</option>
+                <option>School of Medicine (SOM)</option>
+                <option>School of Tourism and Hospitality Management (STHM)</option>
+                <option>School of Foundation Studies and Education (SFSE)</option>
+              </select>
             </div>
             <div class="form-group" id="rfidSection" style="display:none">
               <label>RFID Card Number</label>
