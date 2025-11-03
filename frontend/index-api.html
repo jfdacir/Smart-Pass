@@ -783,7 +783,7 @@
           <div class="toolbar">
             <h2>📅 Counseling Appointments</h2>
             <span style="flex:1"></span>
-            <button class="btn btn-primary" onclick="showRequestAppointment()">+ Request Appointment</button>
+            <button id="requestAppointmentBtn" class="btn btn-primary" onclick="showRequestAppointment()" style="display:none">+ Request Appointment</button>
           </div>
           <div id="appointmentsList" style="margin-top:20px"></div>
         </div>
@@ -855,10 +855,11 @@
       const gradients = {
         'Student': 'linear-gradient(135deg, rgba(100,150,255,.85), rgba(160,120,255,.85))',
         'Professor': 'linear-gradient(135deg, rgba(60,200,150,.85), rgba(80,140,255,.85))',
-        'Guidance Counselor': 'linear-gradient(135deg, rgba(255,220,90,.9), rgba(90,140,255,.85))',
+        'Counselor': 'linear-gradient(135deg, rgba(255,220,90,.9), rgba(90,140,255,.85))',
         'Admin/Exec': 'linear-gradient(135deg, #ffffff, #ffffff)',
         'System Admin': 'linear-gradient(135deg, rgba(10,14,28,.95), rgba(20,26,54,.95))',
-        'Super Admin': 'linear-gradient(135deg, rgba(10,14,28,.95), rgba(20,26,54,.95))'
+        'Super Admin': 'linear-gradient(135deg, rgba(10,14,28,.95), rgba(20,26,54,.95))',
+        'Department Head': 'linear-gradient(135deg, rgba(255,150,80,.85), rgba(255,100,120,.85))'
       };
       return gradients[role] || gradients['Student'];
     }
@@ -951,12 +952,12 @@
       
       let navItems = [
         { id: 'dashboard', icon: '🏠', label: 'Dashboard', roles: ['all'] },
-        { id: 'rfid', icon: '📡', label: 'RFID Scanner', roles: ['Professor', 'Admin/Exec', 'System Admin', 'Super Admin'] },
+        { id: 'rfid', icon: '📡', label: 'RFID Scanner', roles: ['Professor', 'Department Head', 'Admin/Exec', 'System Admin', 'Super Admin'] },
         { id: 'messages', icon: '💬', label: 'Messages', roles: ['all'] },
-        { id: 'wellness', icon: '😊', label: 'Wellness', roles: ['Student', 'Guidance Counselor', 'Admin/Exec', 'System Admin', 'Super Admin'] },
-        { id: 'appointments', icon: '📅', label: 'Appointments', roles: ['Student', 'Guidance Counselor', 'Admin/Exec', 'System Admin', 'Super Admin'] },
+        { id: 'wellness', icon: '😊', label: 'Wellness', roles: ['Student', 'Counselor', 'Admin/Exec', 'System Admin', 'Super Admin'] },
+        { id: 'appointments', icon: '📅', label: 'Appointments', roles: ['Student', 'Counselor', 'Admin/Exec', 'System Admin', 'Super Admin'] },
         { id: 'tickets', icon: '🎫', label: 'Tickets', roles: ['all'] },
-        { id: 'analytics', icon: '📊', label: 'Analytics', roles: ['Professor', 'Admin/Exec', 'System Admin', 'Super Admin'] },
+        { id: 'analytics', icon: '📊', label: 'Analytics', roles: ['Professor', 'Department Head', 'Admin/Exec', 'System Admin', 'Super Admin'] },
         { id: 'admin', icon: '⚙️', label: 'Admin', roles: ['System Admin', 'Super Admin'] }
       ];
 
@@ -1021,7 +1022,7 @@
     async function loadAppointments() {
       let url = `${API_URL}/events`;
       if (currentUser.role === 'Student') url += `?studentId=${currentUser.id}`;
-      if (currentUser.role === 'Guidance Counselor') url += `?counselorId=${currentUser.id}`;
+      if (currentUser.role === 'Counselor') url += `?counselorId=${currentUser.id}`;
       const response = await fetch(url);
       appointments = await response.json();
     }
@@ -1059,7 +1060,7 @@
       const copy = {
         'Student': { badge: 'Student Portal', greeting: `Hello, ${firstName}`, caption: 'Track attendance, wellness, and connect with support.' },
         'Professor': { badge: 'Faculty Workspace', greeting: `Hello, ${firstName}`, caption: 'Manage attendance and view class analytics.' },
-        'Guidance Counselor': { badge: 'Guidance Desk', greeting: `Hello, ${firstName}`, caption: 'Support student wellness and schedule meetings.' },
+        'Counselor': { badge: 'Guidance Desk', greeting: `Hello, ${firstName}`, caption: 'Support student wellness and schedule meetings.' },
         'Admin/Exec': { badge: 'Admin Control', greeting: 'Hello, Admin', caption: 'Institution-wide insights and management.' },
         'System Admin': { badge: 'SysOps', greeting: 'Hello, System Admin', caption: 'System oversight and technical support.' },
         'Super Admin': { badge: 'God Mode', greeting: 'Hello, SuperAdmin', caption: 'Complete system control and administration.' }
@@ -1375,6 +1376,10 @@
     }
 
     function renderAppointments() {
+      const requestBtn = $('requestAppointmentBtn');
+      if (requestBtn) {
+        requestBtn.style.display = currentUser.role === 'Student' ? 'inline-flex' : 'none';
+      }
       const list = $('appointmentsList');
       if (appointments.length === 0) {
         list.innerHTML = '<p class="muted">No appointments.</p>';
@@ -1393,7 +1398,7 @@
     }
 
     function showRequestAppointment() {
-      const counselors = users.filter(u => u.role === 'Guidance Counselor');
+      const counselors = users.filter(u => u.role === 'Counselor');
       const html = `
         <div class="modal" onclick="if(event.target===this) this.remove()">
           <div class="modal-content">
@@ -1691,7 +1696,7 @@
               <select id="editRole" class="select">
                 <option ${user.role === 'Student' ? 'selected' : ''}>Student</option>
                 <option ${user.role === 'Professor' ? 'selected' : ''}>Professor</option>
-                <option ${user.role === 'Guidance Counselor' ? 'selected' : ''}>Guidance Counselor</option>
+                <option ${user.role === 'Counselor' ? 'selected' : ''}>Counselor</option>
                 <option ${user.role === 'Admin/Exec' ? 'selected' : ''}>Admin/Exec</option>
                 <option ${user.role === 'System Admin' ? 'selected' : ''}>System Admin</option>
               </select>

@@ -45,6 +45,11 @@ router.post('/', async (req, res) => {
   try {
     const { id, studentId, counselorId, mood, meetingDate, slot, note } = req.body;
 
+    const [requester] = await db.query('SELECT role FROM users WHERE id = ?', [studentId]);
+    if (requester.length === 0 || requester[0].role !== 'Student') {
+      return res.status(403).json({ error: 'Only students can request appointments' });
+    }
+
     const history = JSON.stringify([{
       Action: 'Requested',
       Timestamp: new Date().toISOString()
@@ -89,6 +94,9 @@ router.put('/:eventId', async (req, res) => {
     }
 
     const event = existing[0];
+
+    if (counselorId && event.counselor_id !== counselorId) {
+      return res.status(403).json({ error: 'You can only update your own appointments' });}
     const history = event.history ? JSON.parse(event.history) : [];
     
     // Add history entry
